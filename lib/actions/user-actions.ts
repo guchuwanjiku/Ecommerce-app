@@ -21,6 +21,10 @@ export const SignOut = async () => {
   redirect(redirectTo.redirect)
 }
 
+export const SignInWithGoogle = async () => {
+  await signIn('google')
+}
+
 // CREATE
 export async function registerUser(userSignUp: IUserSignUp) {
   try {

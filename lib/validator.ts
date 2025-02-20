@@ -87,6 +87,8 @@ export const OrderItemSchema = z.object({
   size: z.string().optional(),
   color: z.string().optional(),
 })
+
+// Cart
 export const ShippingAddressSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
   street: z.string().min(1, 'Address is required'),
@@ -134,7 +136,7 @@ export const OrderInputSchema = z.object({
   isPaid: z.boolean().default(false),
   paidAt: z.date().optional(),
 })
-// Cart
+
 
 export const CartSchema = z.object({
   items: z

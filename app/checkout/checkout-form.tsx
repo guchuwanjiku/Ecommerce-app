@@ -37,6 +37,8 @@ import Link from 'next/link'
 import useCartStore from '@/hooks/use-cart-store'
 import ProductPrice from '@/components/shared/product/product-price'
 import { APP_NAME, AVAILABLE_DELIVERY_DATES, AVAILABLE_PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD } from '@/lib/constants'
+import { createOrder } from '@/lib/actions/order.actions'
+import { toast } from '@/hooks/use-toast'
 
 const shippingAddressDefaultValues =
   process.env.NODE_ENV === 'development'
@@ -78,6 +80,7 @@ const CheckoutForm = () => {
     updateItem,
     removeItem,
     setDeliveryDateIndex,
+    clearCart,
   } = useCartStore()
   const isMounted = useIsMounted()
 
@@ -108,6 +111,32 @@ const CheckoutForm = () => {
     useState<boolean>(false)
 
   const handlePlaceOrder = async () => {
+    const res = await createOrder({
+      items,
+      shippingAddress,
+      expectedDeliveryDate: calculateFutureDate(
+        AVAILABLE_DELIVERY_DATES[deliveryDateIndex!].daysToDeliver
+      ),
+      deliveryDateIndex,
+      paymentMethod,
+      itemsPrice,
+      shippingPrice,
+      taxPrice,
+      totalPrice,
+    })
+    if (!res.success) {
+      toast({
+        description: res.message,
+        variant: 'destructive',
+      })
+    } else {
+      toast({
+        description: res.message,
+        variant: 'default',
+      })
+      clearCart()
+      router.push(`/checkout/${res.data?.orderId}`)
+    }
   }
   const handleSelectPaymentMethod = () => {
     setIsAddressSelected(true)
@@ -681,3 +710,7 @@ const CheckoutForm = () => {
   )
 }
 export default CheckoutForm
+
+// function clearCart() {
+//   throw new Error('Function not implemented.')
+// }
